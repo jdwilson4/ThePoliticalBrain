@@ -21,7 +21,34 @@ The data from the above link is a `mat` file called `tc.mat`. For your own use, 
 
 ## Running BrainNetCNN (Optional)
 
-This section will show you how to run the BrainNetCNN algorithm on the Wellbeing functional connectivity data set as done in the Yang, et al. paper above. Note that the results from BrainNetCNN on this data set are available in the 
+This section will show you how to run the BrainNetCNN algorithm on the Wellbeing functional connectivity data set as done in the Yang, et al. paper above. Note that the BrainNetCNN extracted features from the Wellbeing dataset are available in the *fMRI_Task_Features.csv* file. We will be using this .csv file in the next section to further analyze the results. Now we will describe how to run BrainNetCNN on the raw functional connectivity data.
+
+You will need to make sure the following dependencies are installed on Python version 2.7.5. or greater:
+
+• numpy –1.19.2
+• scipy –1.2.1
+• h5py –2.10.0
+• matplotlib –3.3.4 
+• pickle –0.7.5
+• Caffe –1.0.0 
+• csv –1.0
+• os
+• sys
+• pandas –0.25.0 
+• imblearn –0.5.0 
+• ann4brains
+• sklearn –0.21.3 
+• itertools
+• random
+
+We modified the original BrainNetCNN and deconvolutional network architecture for our own purpose. The original BrainNetCNN code is originally from https://github.com/jeremykawahara/ann4brains. The original deconvolutional network architecture code is originally from https://shengshuyang.github.io/A-step-by-step-guide-to-Caffe.html and https://github.com/sukritshankar/CNN-Saliency-Map/blob/master/find_saliency_map.py.
+
+Make sure that the `tc.mat` file and the `Running BrainNetCNN` are both downloaded and that the `tc.mat` file is located in the `Running BrainNetCNN` folder. Now you can simply run the following code from the terminal:
+
+``` 
+python main.py
+```
+
 
 
 ## Analyzing the Results
