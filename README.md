@@ -49,12 +49,46 @@ Make sure that the `tc.mat` file and the `Running BrainNetCNN` are both download
 python main.py
 ```
 
+This will output two files: **placeholder** and **placeholder** 
 
 
 ## Analyzing the Results
 
-The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data.
+The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data and to obtain the figures and tables in the Yang et al. manuscript.
 
-```{r} 
-trial
+The following were performed in RStudio Version 1.4.1717. 
+
+**Loading the Features from BrainNetCNN** 
+
+Here, we will directly load the data `fMRI_Task_Features.csv` available in this repository. Alternatively, you can load the **placeholder** file from running the BrainNetCNN algorithm in the above section.
+
 ```
+placeholder
+```
+
+**Summaries of Socio-Economic Survey Responses**
+
+This code provides the summary of the survey responses of the participants in the Wellbeing study and provides the information in **Table 2** of the manuscript.
+
+```
+placeholder
+```
+
+
+**Running an Association Analysis**
+
+This code provides plot **Figure 1** -- pairwise scatterplots that show associations among the features (political scores from each task) as well as associations between the predicted political scores and the true political ideology of each participant.
+
+``` 
+placeholder
+```
+
+**Running principal component analysis (PCA) on the Predicted Political Ideology Scores**
+
+This code provides plot **Figure 2** -- the scree plot and biplot of the top 2 principal components, with scores colored by ideology. This also creates **Table 3** -- the contribution of each task to the top 5 principal components of the predicted political ideology score matrix.
+
+```
+placeholder
+```
+
+
