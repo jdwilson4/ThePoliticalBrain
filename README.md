@@ -310,7 +310,7 @@ text(cex=.85, x = my.bar, y=-0.15, labs, xpd=TRUE, srt=90)
 ```
 
 
-This next chunk calculates the accuracies for each model considered in the study. To get accuracies, we will use the `caret` and `e1071` packages in R.
+This next chunk calculates the accuracies for each model considered in the study as provided in the left panel of **Figure 3**. To obtain predictive accuracies, we use the `caret` and `e1071` packages in R.
 
 ```
 install.packages("e1071")
