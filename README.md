@@ -75,24 +75,65 @@ truth <- dat$conservative_you
 This code provides the summary of the survey responses of the participants in the Wellbeing study and provides the information in **Table 2** of the manuscript.
 
 ```
-placeholder
+# organize data to be analyzed
+
+data.x <- data.frame(Age = dat$age, Religious = dat$HowReligious, Educ = dat$education1_you, 
+                     Educ_father = dat$education_father, Educ_mother = dat$education_mother,
+                     Grewup = dat$cityGrewupConservative, Now = dat$cityNowConservative, 
+                     Cons_father = dat$conservative_father, Cons_mother = dat$conservative_mother,
+                     Income = dat$income_you, Income_parent = dat$income_parent, Male = dat$isMale,
+                     Affect = dat$Affect, Empathy = dat$Empathy, Encoding = dat$Encoding, 
+                     GoNogo = dat$GoNogo, Resting = dat$Resting, Retrieval = dat$Retrieval, 
+                     Reward = dat$Reward, ToM = dat$ToM, Working_Mem = dat$WorkingMem)
+
+
+# descriptive summaries of Table 2
+table(data.x$Male)
+mean(data.x$Age)
+sd(data.x$Age)
+summary(data.x$Age)
+table(data.x$Educ)
+table(data.x$Educ_father)
+table(data.x$Educ_mother)
+table(data.x$Cons_father)
+table(data.x$Cons_mother)
+table(data.x$Income)
+table(data.x$Income_parent)
+table(data.x$Religious)
+table(data.x$Now)
+table(data.x$Grewup)
+table(truth)
+
+# correlations and p-values of Table 2
+cor.test(data.x$Male, truth)
+cor.test(data.x$Age, truth)
+cor.test(data.x$Educ, truth)
+cor.test(data.x$Educ_father, truth)
+cor.test(data.x$Educ_mother, truth)
+cor.test(data.x$Cons_father, truth)
+cor.test(data.x$Cons_mother, truth)
+cor.test(data.x$Income, truth)
+cor.test(data.x$Income_parent, truth)
+cor.test(data.x$Religious, truth)
+cor.test(data.x$Now, truth)
+cor.test(data.x$Grewup, truth)
 ```
 
 
-**Running an Association Analysis**
+**Running Association Analysis of features against true ideology**
 
 This code provides plot **Figure 1** -- pairwise scatterplots that show associations among the features (political scores from each task) as well as associations between the predicted political scores and the true political ideology of each participant.
 
 To create this plot, you'll need the `GGally` and `ggplot2` packages installed and loaded in R.
 
 ``` 
-#load the needed packages
+# load the needed packages
 install.packages("ggplot2")
 install.packages("GGally")
 library(ggplot2)
 library(GGally)
 
-#get a .pdf of the plot using the ggpairs function
+# get a .pdf of the plot using the ggpairs function
 pdf("Associations_Figure1.pdf", width = 16, height = 16)
 ggpairs(data.frame(Ideology = truth, Affect = dat$Affect, Empathy = dat$Empathy, Reward = dat$Reward, Retrieval = dat$Retrieval, Resting = dat$Resting, 
                    GoNoGo = dat$GoNogo, Encoding = dat$Encoding, ToM = dat$ToM, WorkingMem= dat$WorkingMem, Extremity = as.factor(Extremity)), 
@@ -108,18 +149,18 @@ This first chunk of code provides plot **Figure 2** -- the scree plot and biplot
 To get this plot, you'll need the `factoextra` packages installed and loaded in R. 
 
 ```
-#load the needed package
+# load the needed package
 install.packages("factoextra")
 library(factoextra)
 
-#get the scores matrix
+# get the scores matrix
 scores_matrix <- as.matrix(data.frame(Affect = dat$Affect, Empathy = dat$Empathy, Reward = dat$Reward, Retrieval = dat$Retrieval, Resting = dat$Resting, 
                             GoNoGo = dat$GoNogo, Encoding = dat$Encoding, ToM = dat$ToM, WorkingMem= dat$WorkingMem))
 
-#run pca and visualize the scree plot
+# run pca and visualize the scree plot
 pcs <- prcomp(scores_matrix, scale = TRUE)
 
-#set node colors as "Liberal" vs. "Conservative"
+# set node colors as "Liberal" vs. "Conservative"
 groups <- rep("Conservative", dim(dat)[1])
 groups[which(truth == 6)] <- "Conservative"
 groups[which(truth == 1)] <- "Liberal"
@@ -127,7 +168,7 @@ groups[which(truth == 2 | truth == 3)] <- "Liberal"
 groups <- as.factor(groups)
 
 
-#biplot with each party type - the right panel of Figure 2
+# biplot with each party type - the right panel of Figure 2
 pdf("Biplot_Right_Figure2.pdf", width = 10, height = 7.5)
 fviz_pca_ind(pcs,
              col.ind = groups, # color by groups
@@ -139,7 +180,7 @@ fviz_pca_ind(pcs,
 
 dev.off()
 
-#Scree plot - the left panel of Figure 2
+# scree plot - the left panel of Figure 2
 pdf("Scree_plot_Left_Figure2.pdf", width = 6, height = 7.5)
 fviz_eig(pcs) + theme_gray(base_size = 15)
 
@@ -155,7 +196,7 @@ var_coord_func <- function(loadings, comp.sdev){
   loadings*comp.sdev
 }
 
-# Compute Coordinates
+# compute coordinates
 loadings <- pcs$rotation
 sdev <- pcs$sdev
 var.coord <- t(apply(loadings, 1, var_coord_func, sdev)) 
@@ -166,7 +207,7 @@ comp.cos2 <- apply(var.cos2, 2, sum)
 contrib <- function(var.cos2, comp.cos2){var.cos2*100/comp.cos2}
 var.contrib <- t(apply(var.cos2,1, contrib, comp.cos2))
 
-#Table 3 -- the first 5 pcs
+# print Table 3 -- the first 5 pcs
 Table3 <- var.contrib[, 1:5]
 
 ```
