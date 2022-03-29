@@ -54,7 +54,7 @@ This will output two files: **placeholder** and **placeholder**
 
 ## Analyzing the results
 
-The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data and to obtain the figures and tables in the Yang et al. manuscript.
+The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data and to obtain the figures and tables in the Yang et al. manuscript. To reproduce the analysis performed in the manuscript, run Steps **I. - VI.** below.
 
 The following were performed in RStudio Version 1.4.1717. 
 
