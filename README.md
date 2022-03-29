@@ -62,8 +62,12 @@ The following were performed in RStudio Version 1.4.1717.
 
 Here, we will directly load the data `fMRI_Task_Features.csv` available in this repository. Alternatively, you can load the **placeholder** file from running the BrainNetCNN algorithm in the above section.
 
+First, set `directory` to be the location of the `fMRI_Task_Features.csv` file from this repository. Then run the following:
+
 ```
-placeholder
+setwd("directory")
+dat <- read.csv(file = "fMRI_Task_Features.csv", header = TRUE)
+truth <- dat$conservative_you
 ```
 
 **Summaries of Socio-Economic Survey Responses**
@@ -79,8 +83,19 @@ placeholder
 
 This code provides plot **Figure 1** -- pairwise scatterplots that show associations among the features (political scores from each task) as well as associations between the predicted political scores and the true political ideology of each participant.
 
+To create this plot, you'll need the `GGally` and `ggplot2` packages installed and loaded. 
+
 ``` 
-placeholder
+install.packages("ggplot2")
+install.packages("GGally")
+library(ggplot2)
+library(GGally)
+pdf("Associations_Figure1.pdf", width = 16, height = 16)
+ggpairs(data.frame(Ideology = truth, Affect = dat$Affect, Empathy = dat$Empathy, Reward = dat$Reward, Retrieval = dat$Retrieval, Resting = dat$Resting, 
+                   GoNoGo = dat$GoNogo, Encoding = dat$Encoding, ToM = dat$ToM, WorkingMem= dat$WorkingMem, Extremity = as.factor(Extremity)), 
+                   mapping =  aes(color = Extremity), alpha = 0.5, upper = list(continuous = wrap("cor"))) + theme_grey(base_size = 15)
+
+dev.off()
 ```
 
 **Running principal component analysis (PCA) on the Predicted Political Ideology Scores**
