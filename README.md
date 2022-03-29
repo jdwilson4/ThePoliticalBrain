@@ -52,13 +52,13 @@ python main.py
 This will output two files: **placeholder** and **placeholder** 
 
 
-## Analyzing the Results
+## Analyzing the results
 
 The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data and to obtain the figures and tables in the Yang et al. manuscript.
 
 The following were performed in RStudio Version 1.4.1717. 
 
-**Loading the Features from BrainNetCNN** 
+**Loading the features from BrainNetCNN** 
 
 Here, we will directly load the data `fMRI_Task_Features.csv` available in this repository. Alternatively, you can load the **placeholder** file from running the BrainNetCNN algorithm in the above section.
 
@@ -70,7 +70,7 @@ dat <- read.csv(file = "fMRI_Task_Features.csv", header = TRUE)
 truth <- dat$conservative_you
 ```
 
-**Summaries of Socio-Economic Survey Responses**
+**Summaries of socio-economic survey responses**
 
 This code provides the summary of the survey responses of the participants in the Wellbeing study and provides the information in **Table 2** of the manuscript.
 
@@ -120,7 +120,7 @@ cor.test(data.x$Grewup, truth)
 ```
 
 
-**Running Association Analysis of features against true ideology**
+**Running association analysis of features against true ideology**
 
 This code provides plot **Figure 1** -- pairwise scatterplots that show associations among the features (political scores from each task) as well as associations between the predicted political scores and the true political ideology of each participant.
 
@@ -142,7 +142,7 @@ ggpairs(data.frame(Ideology = truth, Affect = dat$Affect, Empathy = dat$Empathy,
 dev.off()
 ```
 
-**Running principal component analysis (PCA) on the Predicted Political Ideology Scores**
+**Running principal component analysis (PCA) on the predicted political ideology scores**
 
 This first chunk of code provides plot **Figure 2** -- the scree plot and biplot of the top 2 principal components, with scores colored by ideology. 
 
