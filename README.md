@@ -382,3 +382,28 @@ accuracy_table <- data.frame(Model = c("Affect", "Empathy", "Encoding", "Gonogo"
 
 ### VI. Variable importance of BrainNetCNN and survey-based features
 
+This code chunk will reproduce the variable importance summaries provided in **Table 4** of the manuscript.
+
+To run this chunk, you will need the `glmnet` package installed and loaded in R.
+
+```
+# load the needed package
+install.packages("glmnet")
+library(glmnet)
+
+# run LASSO on full model
+reg_lasso <- cv.glmnet(x = as.matrix(data.x),
+                      y = truth1, family = "binomial")
+
+best.lambda <- reg_lasso$lambda.min
+# first column of Table 4
+coef(reg_lasso, s = "lambda.min")
+
+# now get the coefficients and standard errors from the covariates that were had importance > 0 from above.
+regression_results <- glm(truth1 ~ Reward + Retrieval + Empathy + Cons_mother + Cons_father + Educ_father + Educ_mother,
+                          data = data.x)
+                          
+# last two columns of Table 4
+summary(regression_results)
+
+```
