@@ -58,7 +58,7 @@ The following will implement the steps we took to analyze the features obtained 
 
 The following were performed in RStudio Version 1.4.1717. 
 
-**Loading the features from BrainNetCNN** 
+### Loading the features from BrainNetCNN 
 
 Here, we will directly load the data `fMRI_Task_Features.csv` available in this repository. Alternatively, you can load the **placeholder** file from running the BrainNetCNN algorithm in the above section.
 
