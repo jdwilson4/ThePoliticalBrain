@@ -83,13 +83,16 @@ placeholder
 
 This code provides plot **Figure 1** -- pairwise scatterplots that show associations among the features (political scores from each task) as well as associations between the predicted political scores and the true political ideology of each participant.
 
-To create this plot, you'll need the `GGally` and `ggplot2` packages installed and loaded. 
+To create this plot, you'll need the `GGally` and `ggplot2` packages installed and loaded in R.
 
 ``` 
+#load the needed packages
 install.packages("ggplot2")
 install.packages("GGally")
 library(ggplot2)
 library(GGally)
+
+#get a .pdf of the plot using the ggpairs function
 pdf("Associations_Figure1.pdf", width = 16, height = 16)
 ggpairs(data.frame(Ideology = truth, Affect = dat$Affect, Empathy = dat$Empathy, Reward = dat$Reward, Retrieval = dat$Retrieval, Resting = dat$Resting, 
                    GoNoGo = dat$GoNogo, Encoding = dat$Encoding, ToM = dat$ToM, WorkingMem= dat$WorkingMem, Extremity = as.factor(Extremity)), 
@@ -100,10 +103,72 @@ dev.off()
 
 **Running principal component analysis (PCA) on the Predicted Political Ideology Scores**
 
-This code provides plot **Figure 2** -- the scree plot and biplot of the top 2 principal components, with scores colored by ideology. This also creates **Table 3** -- the contribution of each task to the top 5 principal components of the predicted political ideology score matrix.
+This first chunk of code provides plot **Figure 2** -- the scree plot and biplot of the top 2 principal components, with scores colored by ideology. 
+
+To get this plot, you'll need the `factoextra` packages installed and loaded in R. 
 
 ```
-placeholder
+#load the needed package
+install.packages("factoextra")
+library(factoextra)
+
+#get the scores matrix
+scores_matrix <- as.matrix(data.frame(Affect = dat$Affect, Empathy = dat$Empathy, Reward = dat$Reward, Retrieval = dat$Retrieval, Resting = dat$Resting, 
+                            GoNoGo = dat$GoNogo, Encoding = dat$Encoding, ToM = dat$ToM, WorkingMem= dat$WorkingMem))
+
+#run pca and visualize the scree plot
+pcs <- prcomp(scores_matrix, scale = TRUE)
+
+#set node colors as "Liberal" vs. "Conservative"
+groups <- rep("Conservative", dim(dat)[1])
+groups[which(truth == 6)] <- "Conservative"
+groups[which(truth == 1)] <- "Liberal"
+groups[which(truth == 2 | truth == 3)] <- "Liberal"
+groups <- as.factor(groups)
+
+
+#biplot with each party type - the right panel of Figure 2
+pdf("Biplot_Right_Figure2.pdf", width = 10, height = 7.5)
+fviz_pca_ind(pcs,
+             col.ind = groups, # color by groups
+             addEllipses = TRUE, # Concentration ellipses
+             ellipse.type = "confidence",
+             legend.title = "Ideology",
+             repel = TRUE
+) + theme_gray(base_size = 15)
+
+dev.off()
+
+#Scree plot - the left panel of Figure 2
+pdf("Scree_plot_Left_Figure2.pdf", width = 6, height = 7.5)
+fviz_eig(pcs) + theme_gray(base_size = 15)
+
+dev.off()
+```
+
+
+This next chunk generates **Table 3** of the manuscript -- the contribution of each task to the top 5 principal components of the predicted political ideology score matrix.
+
+```
+# variable contributions to the pcs
+var_coord_func <- function(loadings, comp.sdev){
+  loadings*comp.sdev
+}
+
+# Compute Coordinates
+loadings <- pcs$rotation
+sdev <- pcs$sdev
+var.coord <- t(apply(loadings, 1, var_coord_func, sdev)) 
+
+var.cos2 <- var.coord^2
+
+comp.cos2 <- apply(var.cos2, 2, sum)
+contrib <- function(var.cos2, comp.cos2){var.cos2*100/comp.cos2}
+var.contrib <- t(apply(var.cos2,1, contrib, comp.cos2))
+
+#Table 3 -- the first 5 pcs
+Table3 <- var.contrib[, 1:5]
+
 ```
 
 
