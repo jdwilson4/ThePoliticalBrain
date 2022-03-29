@@ -58,7 +58,7 @@ The following will implement the steps we took to analyze the features obtained 
 
 The following were performed in RStudio Version 1.4.1717. 
 
-### Loading the features from BrainNetCNN 
+### I. Loading the features from BrainNetCNN 
 
 Here, we will directly load the data `fMRI_Task_Features.csv` available in this repository. Alternatively, you can load the **placeholder** file from running the BrainNetCNN algorithm in the above section.
 
@@ -70,7 +70,7 @@ dat <- read.csv(file = "fMRI_Task_Features.csv", header = TRUE)
 truth <- dat$conservative_you
 ```
 
-**Summaries of socio-economic survey responses**
+### II. Summaries of socio-economic survey responses
 
 This code provides the summary of the survey responses of the participants in the Wellbeing study and provides the information in **Table 2** of the manuscript.
 
@@ -120,7 +120,7 @@ cor.test(data.x$Grewup, truth)
 ```
 
 
-**Running association analysis of features against true ideology**
+### III. Running association analysis of features against true ideology
 
 This code provides plot **Figure 1** -- pairwise scatterplots that show associations among the features (political scores from each task) as well as associations between the predicted political scores and the true political ideology of each participant.
 
@@ -142,7 +142,7 @@ ggpairs(data.frame(Ideology = truth, Affect = dat$Affect, Empathy = dat$Empathy,
 dev.off()
 ```
 
-**Running principal component analysis (PCA) on the predicted political ideology scores**
+### IV. Running principal component analysis (PCA) on the predicted political ideology scores
 
 This first chunk of code provides plot **Figure 2** -- the scree plot and biplot of the top 2 principal components, with scores colored by ideology. 
 
@@ -212,4 +212,173 @@ Table3 <- var.contrib[, 1:5]
 
 ```
 
+### V. Predicting political ideology with BrainNetCNN features
+
+This code chunk generates the data and plot for **Figure 3** of the manuscript. In particular, this will plot the AUCs and report the accuracies of each model considered in the manuscript. Averages and standard deviations of each metric are reported based on Monte Carlo cross validation over 1000 randomly selected samples from the full population.
+
+This first chunk creates the AUC plot in the right panel of **Figure 3**. 
+
+
+```
+# load the needed packages
+install.packages("pROC")
+install.packages("verification")
+library(pROC)
+library(verification)
+
+# binarize political ideology into "Conservative" and "Liberal" (0 vs. 1)
+truth1 <- truth 
+truth1[truth1 < 4] = 0
+truth1[truth1 > 3] = 1
+
+# calculate AUCs for each model
+aucs <- list()
+
+aucs[[1]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ dat$Affect, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+aucs[[2]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ Empathy, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot 
+aucs[[3]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ Encoding, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+aucs[[4]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ GoNogo, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot 
+aucs[[5]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ Resting, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+aucs[[6]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ Retrieval, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+aucs[[7]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ Reward, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+aucs[[8]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ ToM, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+aucs[[9]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ WorkingMem, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot 
+
+# all tasks
+aucs[[10]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ Affect + Empathy + Encoding + GoNogo + Resting + Retrieval + Reward +
+                                                         ToM + WorkingMem, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+# parent conservatism only
+aucs[[11]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ conservative_father + conservative_mother, data = dat, family = "binomial"), 
+                      type = "response"), CI = TRUE)$A.boot
+
+# parent conservatism + all tasks
+aucs[[12]] <-  roc.plot(as.numeric(truth1), predict(glm(truth1 ~ conservative_father + conservative_mother + Affect + Empathy + Encoding + GoNogo + Resting + Retrieval + Reward + ToM + WorkingMem, data = dat, family = "binomial"), type = "response"), CI = TRUE)$A.boot
+
+# all survey only
+aucs[[13]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ age + education1_you +
+                                                         education_father + education_mother + cityGrewupConservative +
+                                                         cityNowConservative + conservative_father + conservative_mother +
+                                                         income_you + income_parent + isMale, data = dat, family = "binomial"), type = "response"), 
+                                                         CI = TRUE)$A.boot
+
+# survey + tasks
+aucs[[14]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ age + education1_you +
+                                                         education_father + education_mother + cityGrewupConservative +
+                                                         cityNowConservative + conservative_father + conservative_mother +
+                                                         income_you + income_parent + isMale + Affect + Empathy + Encoding + GoNogo + Resting + Retrieval 
+                                                         + Reward + ToM + WorkingMem, data = dat, family = "binomial"), type = "response"), 
+                                                         CI = TRUE)$A.boot 
+
+# survey without parent conservatism
+aucs[[15]] <- roc.plot(as.numeric(truth1), predict(glm(truth1 ~ age + education1_you +
+                                                         education_father + education_mother + cityGrewupConservative +
+                                                         cityNowConservative + income_you + income_parent + isMale, data = dat, family = "binomial"), 
+                                                         type = "response"), CI = TRUE)$A.boot 
+
+
+###Means and standard deviation. 
+mean_auc <- rep(0, 15)
+sd_auc <- rep(0, 15)
+for(i in 1:15){
+  mean_auc[i] <- mean(aucs[[i]])
+  sd_auc[i] <- sd(aucs[[i]])
+}
+
+#A function to add arrows on the chart
+error.bar <- function(x, y, upper, lower=upper, length=0.1,...){
+  arrows(x,y+upper, x, y-lower, angle=90, code=3, length=length, ...)
+}
+
+x <- order(mean_auc)
+
+# Creating Figure 3 (AUC figure)
+
+dev.new()
+my.bar <- barplot(mean_auc[x], 
+                  names.arg = c("Affect", "Empathy", "Encoding", "GoNogo", "Resting", "Retrieval", "Reward", "ToM", "WorkingMem", "All Tasks", 
+                                "Parental Conservatism", "Parental Cons. + All Tasks", 
+                                "All Survey", "All Survey + All Tasks", "Survey w/o Parent Cons.")[x],
+                  xaxt = "n", ylab = "Predictive AUC", ylim = c(0,1), col = c(rep("orange", 5), rep("grey", 7), "darkblue", "darkblue", "darkblue"),
+                  density = 30, angle = 36)
+
+error.bar(my.bar, mean_auc[x],sd_auc[x])
+
+labs <- c("Affect", "Empathy", "Encoding", "GoNogo", "Resting", "Retrieval", "Reward", "ToM", "WorkingMem", "All FC Tasks", 
+          "Parent", "All Survey", "Parent + FC",  "Survey + FC", "Survey w/o Parent Cons.")[x]
+
+text(cex=.85, x = my.bar, y=-0.15, labs, xpd=TRUE, srt=90)
+```
+
+
+This next chunk calculates the accuracies for each model considered in the study. To get accuracies, we will use the `caret` and `e1071` packages in R.
+
+```
+install.packages("e1071")
+library(caret)
+library(e1071)
+
+train_control <- trainControl(method = "LGOCV", number = 1000)
+
+dat <- cbind(dat, truth1 = as.factor(truth1))
+
+
+##############################Comparing models via predictive accuracies#########################
+model <- list()
+model[[1]] <- train(truth1 ~ Affect, data = dat, method = "glm", trControl = train_control)
+model[[2]] <- train(truth1 ~ Empathy, data = dat, method = "glm", trControl = train_control)
+model[[3]] <- train(truth1 ~ Encoding, data = dat, method = "glm", trControl = train_control)
+model[[4]] <- train(truth1 ~ GoNogo, data = dat, method = "glm", trControl = train_control)
+model[[5]] <- train(truth1 ~ Resting, data = dat, method = "glm", trControl = train_control)
+model[[6]] <- train(truth1 ~ Retrieval, data = dat, method = "glm", trControl = train_control)
+model[[7]] <- train(truth1 ~ Reward, data = dat, method = "glm", trControl = train_control)
+model[[8]] <- train(truth1 ~ ToM, data = dat, method = "glm", trControl = train_control)
+model[[9]] <- train(truth1 ~ WorkingMem, data = dat, method = "glm", trControl = train_control)
+
+#all tasks
+model[[10]] <- train(truth1 ~ Affect + Empathy + Encoding + GoNogo + Resting + Retrieval + Reward +
+                       ToM + WorkingMem, data = dat, method = "glm", trControl = train_control)
+
+#parent conservatism only
+model[[11]] <- train(truth1 ~ conservative_father + conservative_mother, data = dat, method = "glm", trControl = train_control)
+
+#parent conservatism + tasks
+model[[12]] <- train(truth1 ~ conservative_father + conservative_mother + Affect + Empathy + Encoding + GoNogo + Resting + Retrieval + Reward +
+                       ToM + WorkingMem, data = dat, method = "glm", trControl = train_control)
+#all survey only
+model[[13]] <- train(truth1 ~  age + HowReligious + education1_you +
+                       education_father + education_mother + cityGrewupConservative +
+                       cityNowConservative + conservative_father + conservative_mother +
+                       income_you + income_parent + isMale, data = dat, method = "glm", trControl = train_control)
+#all survey + tasks
+model[[14]] <- train(truth1 ~  age + HowReligious + education1_you +
+                       education_father + education_mother + cityGrewupConservative +
+                       cityNowConservative + conservative_father + conservative_mother +
+                       income_you + income_parent + isMale + Affect + Empathy + Encoding + GoNogo + Resting + Retrieval + Reward +
+                       ToM + WorkingMem, data = dat, method = "glm", trControl = train_control)
+
+#suvey w/o parent conservatism
+model[[15]] <- train(truth1 ~  age + HowReligious + education1_you +
+                       education_father + education_mother + cityGrewupConservative +
+                       cityNowConservative +
+                       income_you + income_parent + isMale, data = dat, method = "glm", trControl = train_control)
+
+
+accuracies <- rep(0, 15)
+st.devs <- rep(0, 15)
+
+for(i in 1:length(model)){
+  accuracies[i] <- model[[i]]$results$Accuracy[which.max(model[[i]]$results$Accuracy)]
+  st.devs[i] <- model[[i]]$results$AccuracySD[which.max(model[[i]]$results$Accuracy)]
+}
+
+# accuracy table on the left of Figure 3.
+accuracy_table <- data.frame(Model = c("Affect", "Empathy", "Encoding", "Gonogo", "Resting",
+                                       "Retrieval", "Reward", "ToM", "WorkingMem",
+                                       "All Tasks", "Parent Cons only", "Parent Cons + Tasks", 
+                                       "All Survey", "All Survey + Tasks", "Survey w/o Parent Cons"),
+                             Mean = accuracies, SD = st.devs)
+
+```
+
+### VI. Variable importance of BrainNetCNN and survey-based features
 
