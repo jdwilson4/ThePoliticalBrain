@@ -49,10 +49,19 @@ Make sure that the `tc.mat` file and the `Running BrainNetCNN` are both download
 python main.py
 ```
 
-This will output two files: **placeholder** and **placeholder** 
+See the `README.docx` file in the `Running BrainNetCNN` folder of this repository to get details about the input and output of each function call in `main.py`.
 
+**Plotting brain maps**
 
-## Analyzing the results
+By running `main.py` you will obtain a collection of 36 .csv files which store the derivatives for each region across folds and tasks (see the `Output` of Line41-42 in the `README.docx` file in `Running BrainNetCNN`). Once you have these files, then you can simply run
+
+```
+draw_brainplots.py
+
+```
+to obtain the brain maps shown in **Figure 4** of the manuscript.
+
+## Analyzing the features from BrainNetCNN
 
 The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data and to obtain the figures and tables in the Yang et al. manuscript. To reproduce the analysis performed in the manuscript, run Steps **I. - VI.** below.
 
