@@ -64,6 +64,7 @@ def produce_derivatives():
     tasks = ['Affect','Empathy','Encoding','GoNogo','Resting','Retrieval','Reward','ToM','WorkingMem']
     hyper = pickle.load(open('hyperparams_conti_268_4cv_hs.pkl', 'rb'))
     data2 = pickle.load(open('index_and_y_conti_4cv.pkl', 'rb'))
+    os.makedirs('csv')
     
     for w in tasks:
         for h in range(4):
@@ -117,7 +118,7 @@ def produce_derivatives():
             
             #save mean predicted derivatives of all people in csv format
             store_mean=store_sum/len(store)
-            np.savetxt(Net_Name + '_derivative_' + w + '_mean.csv', store_mean, delimiter=",")
+            np.savetxt('csv/' + Net_Name + '_derivative_' + w + '_mean.csv', store_mean, delimiter=",")
             print('-----save predicted derivatives of all people(' + Net_Name + ')-----')
 
 
