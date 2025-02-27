@@ -65,7 +65,7 @@ to obtain the brain maps shown in **Figure 4** of the manuscript.
 
 The following will implement the steps we took to analyze the features obtained by BrainNetCNN for the task fMRI data and to obtain the figures and tables in the Yang et al. manuscript. To reproduce the analysis performed in the manuscript, run Steps **I. - VI.** below.
 
-The following were performed in RStudio Version 1.4.1717. 
+The following were performed in RStudio Version 2024.04.2+764. 
 
 ### I. Loading the features from BrainNetCNN 
 
@@ -74,8 +74,8 @@ Here, we will directly load the data `fMRI_Task_Features.csv` available in this 
 First, set `directory` to be the location of the `fMRI_Task_Features.csv` file from this repository. Then run the following:
 
 ```
-setwd("directory")
-dat <- read.csv(file = "fMRI_Task_Features.csv", header = TRUE)
+dat <- read.csv(file = "https://raw.githubusercontent.com/jdwilson4/ThePoliticalBrain/refs/heads/main/Survey%20Data%20and%20Features/fMRI_Task_Features.csv", header = TRUE)
+
 truth <- dat$conservative_you
 ```
 
@@ -141,6 +141,12 @@ install.packages("ggplot2")
 install.packages("GGally")
 library(ggplot2)
 library(GGally)
+
+#First, set Extremity to be lowest and highest conservativism and moderate to be in between
+
+Extremity <- rep("Moderate", length(dat$conservative_you))
+Extremity[which(dat$conservative_you == 1 | dat$conservative_you == 6)] <- "Extreme"
+
 
 # get a .pdf of the plot using the ggpairs function
 pdf("Associations_Figure1.pdf", width = 16, height = 16)
