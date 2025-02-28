@@ -8,7 +8,7 @@ Anonymized functional connectivity data for the 174 participants in the Wellbein
 
 https://drive.google.com/file/d/1cI9ngWViE4TvO2wS7DwYMIKuKE8lJXXB/view?usp=sharing 
 
-This will bring you to a Google Drive that requires permission to download. Please email me at wilsonj41@upmc.edu or jdwilson4@usfca.edu to request access. When you request access, please let me know the purpose of download. If you use the data for your own research, please cite the following papers: 
+This will bring you to a Google Drive that requires permission to download. Please email me at jdwilson4@usfca.edu to request access. When you request access, please let me know the purpose of download. If you use the data for your own research, please cite the following papers: 
 
 Seo-Eun Yang, James D. Wilson, Zhong-Lin Lu, and Skyler Cranmer. **Functional Connectivity Signatures of Political Ideology** (2022) *PNAS Nexus* DOI: https://academic.oup.com/pnasnexus/advance-article/doi/10.1093/pnasnexus/pgac066/6590843
 
